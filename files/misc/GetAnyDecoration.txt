@@ -1,0 +1,36 @@
+@@ title = "Get any Decoration"
+@@ author = "Adrichu00 (based on Sleipnir's code)"
+@@ exit = "Bootstrapped"
+
+inaccurate_emu = 0 ; Set to 1 if you are using an emulator < mgba 0.9
+
+; This code needs an Exit Code Bootstrap or any other type of Box 14's exit.
+; You can use this one: 
+; https://gist.github.com/claydolwithexplosion/017f1784deebcd118b61d3ad917edb3c#making-long-codes-with-wallpapers
+
+; Run this code inside a pokecenter and talk to the nurse.
+; The text box won't close as it usually does.
+
+; Select a decoration
+; List of decorations:
+; https://bulbapedia.bulbagarden.net/wiki/List_of_decorations_in_Generation_III
+decoration = 1
+
+; Do not change this parameter
+scriptStart = (decoration & 0xFF) << 24 | 0x800016
+
+@@
+
+SBC r12, pc, 0xB400
+ADCS r11, pc, 0xC000
+BIC r11, r11, 0xFF
+SBC r12, r12, {inaccurate_emu? 0xD2: 0xD4}
+STR r11, [r12]!
+MOV r12, {scriptStart} ?
+STR r12, [r11]!
+; MOV r12, 0x02070900 ?
+MOV r12, 0xEE0000
+ADC r12, r12, 0xEE0000
+ADC r12, r12, 0x2A4000
+ADC r12, r12, 0xC900
+STR r12, [r11, lr, LSR 0x19]!

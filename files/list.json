@@ -614,5 +614,14 @@
     "ger": "misc/DoInGameTrade_GER.txt",
     "spa": "misc/DoInGameTrade_FRA_SPA.txt",
     "cat": ["misc"]
+  },
+  {
+    "name": "Get any Decoration",
+    "eng": "misc/GetAnyDecoration.txt",
+    "fra": "misc/GetAnyDecoration.txt",
+    "ger": "misc/GetAnyDecoration.txt",
+    "spa": "misc/GetAnyDecoration.txt",
+    "ita": "misc/GetAnyDecoration.txt",
+    "cat": ["misc"]
   }
 ]
