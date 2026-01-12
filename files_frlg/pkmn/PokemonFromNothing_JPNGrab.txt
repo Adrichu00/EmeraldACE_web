@@ -1,0 +1,64 @@
+@@ title = "Create Pokemon from Nothing (grab ACE)"
+@@ author = "Adrichu00"
+@@ exit = null
+
+
+; Leave Box12 - Slot 1 Empty
+; A mon of the selected species will appear in that slot
+; It will have the rest of the data set to 0
+
+species = 0x0000  @input:species
+
+
+; Do not change these parameters
+box_offset = 0x50 * 30 * 3 + 4   // &Box1Name[4] - &Box12Slot1
+sl = species & 0xFF
+sh = species >> 8 & 0xFF
+sbl = sl > 0xEE? 0xEE: (0xB6 < sl && sl < 0xBA? 0xB6: sl)
+sbh = sh > 0xEE? 0xEE: (0xB6 < sh && sh < 0xBA? 0xB6: sh)
+sfl = sl > 0xEE? sl - 0xEE: (0xB6 < sl && sl < 0xBA? sl - 0xB6: 0)
+sfh = sh > 0xEE? sh - 0xEE: (0xB6 < sh && sh < 0xBA? sh - 0xB6: 0)
+species_base ?= sbh << 8 | sbl
+species_fix ?= sfh << 8 | sfl
+
+@@
+
+// 0xB51E  PUSH {r1-r4, lr}
+// 0xA400  ADD  r4, pc, #0x00    // r4 = &Box1Name[4]
+0xA400B51E
+
+// 0x8C20  LDRH r0, [r4, #0x20]  // r0 = box_offset
+// 0x1A21  SUB  r1, r4, r0       // r1 = &Box12Slot1
+0x1A218C20
+
+// 0x00FF  Filler
+// 0x2002  MOV  r0, #0x02        // r0 = Misc. Flags
+0x200200FF
+
+// 0x8CA2  LDRH r2, [r4, #0x24]  // r2 = species_fix
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+0xE0008CA2
+
+// 0xFF00  Bad Filler
+// 0x74C8  STRB r0, [r1, #0x13]  // Write Misc. Flags
+0x74C8FF00
+
+// 0x8C60  LDRH r0, [r4, #0x22]  // r0 = species_base
+// 0x1880  ADD  r0, r0, r2       // r0 = species
+0x18808C60
+
+// 0x8388  STRH r0, [r1, #0x1C]  // Write Checksum
+// 0x00FF  Filler
+0x00FF8388
+
+// 0x8408  STRH r0, [r1, #0x20]  // Write Species
+// 0x2000  MOV  r0, #0x00        // r0 = FALSE
+0x20008408
+
+// 0xBD1E  POP {r1-r4, lr}       // return
+// 0xFF00  Bad Filler
+0xFF00BD1E
+
+// Data
+{species_base << 16 | box_offset}
+{species_fix}

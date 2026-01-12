@@ -213,6 +213,13 @@
     "cat": ["pkmn"]
   },
   {
+    "name": "Create Pokemon species from nothing (grab ACE)",
+    "jap0": "pkmn/PokemonFromNothing_JPNGrab.txt",
+    "jap1": "pkmn/PokemonFromNothing_JPNGrab.txt",
+    "game": ["fr", "lg"],
+    "cat": ["pkmn"]
+  },
+  {
     "name": "Get any item",
     "eng1": "misc/GetAnyItem.txt",
     "eng0": "misc/GetAnyItem.txt",
@@ -487,6 +494,13 @@
     "name": "Change Pokémon PID or TID (Bootstrapped)",
     "eng0": "pkmn/ChangePIDTID_ENG.txt",
     "eng1": "pkmn/ChangePIDTID_ENG.txt",
+    "game": ["fr", "lg"],
+    "cat": ["pkmn"]
+  },
+  {
+    "name": "Make Pokemon Shiny (grab ACE)",
+    "jap0": "pkmn/MakeShiny_JPNGrab.txt",
+    "jap1": "pkmn/MakeShiny_JPNGrab.txt",
     "game": ["fr", "lg"],
     "cat": ["pkmn"]
   }

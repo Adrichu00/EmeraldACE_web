@@ -259,6 +259,11 @@
     "cat": ["pkmn","bootstraps"]
   },
   {
+    "name": "Create Pokemon species from nothing (for 0x085F)",
+    "jap": "pkmn/PokemonFromNothingJAPThumb.txt",
+    "cat": ["pkmn"]
+  },
+  {
     "name": "Thumb->ARM bootstrap",
     "eng": "bootstraps/ThumbArmBootstrapENG.txt",
     "fra": "bootstraps/ThumbArmBootstrapFRA.txt",
@@ -615,5 +620,10 @@
     "ger": "misc/DoInGameTrade_GER.txt",
     "spa": "misc/DoInGameTrade_FRA_SPA.txt",
     "cat": ["misc"]
+  },
+  {
+    "name": "Make Pokemon Shiny (for 0x085F)",
+    "jap": "pkmn/MakeShinyJAPThumb.txt",
+    "cat": ["pkmn"]
   }
 ]

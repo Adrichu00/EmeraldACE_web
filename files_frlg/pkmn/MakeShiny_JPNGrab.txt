@@ -1,0 +1,62 @@
+@@ title = "Make Pokemon Shiny (grab ACE)"
+@@ author = "Adrichu00"
+@@ exit = null
+
+; This code will make shiny the mon at Box 12 - Slot 1.
+; It will replace its OTID with its PID and decrypt all the substructures
+
+@@
+
+// 0xB51E  PUSH {r1-r4, lr}
+// 0xA406  ADD  r4, pc, #0x18    // r4 = &loop_start
+0xA406B51E
+
+// 0x8AE0  LDRH r0, [r4, #0x16]  // r0 = box_offset
+// 0x1A23  SUB  r3, r4, r0       // r3 = &Box12Slot1
+0x1A238AE0
+
+// 0x00FF  Filler
+// 0x6818  LDR  r0, [r3, #0x00]  // r0 = PID
+0x681800FF
+
+// 0x6859  LDR  r1, [r3, #0x04]  // r1 = OTID
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+0xE0006859
+
+// 0xFF00  Bad Filler
+// 0x6058  STR  r0, [r3, #0x04]  // Write new OTID
+0x6058FF00
+
+// 0x4041  EOR  r1, r0           // r1 = encryption_key
+// 0x3320  ADD  r3, #0x20        // r3 = &Box12Slot1 + 0x20
+0x33204041
+
+// 0x222C  MOV  r2, #0x2C        // r2 = index
+// 0x00FF  Filler
+0x00FF222C
+
+// loop_start:
+// 0x5898  LDR  r0, [r2, r3]     // Load Word
+// 0x4048  EOR  r0, r1           // Decrypt Word
+0x40485898
+
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+// 0xFF00  Bad Filler
+0xFF00E000
+
+// 0x5098  STR  r0, [r2, r3]     // Write new Word
+// 0x3A04  SUB  r2, #0x04        // index -= 4
+0x3A045098
+
+// 0xD400  BMI  pc+0x04          // Exit if index < 0
+// 0x46A7  MOV  pc, r4           // Jump to loop_start
+0x46A7D400
+
+
+// 0x00FF  Filler
+// 0x2000  MOV  r0, #0x00        // r0 = FALSE
+0x200000FF
+
+// 0xBD1E  POP  {r1-r4, pc}      // return
+// 0x1C3C  box_offset
+0x1C3CBD1E
