@@ -34,7 +34,14 @@
     "game": ["fr", "lg"],
     "cat": ["rng"]
   },
-    {
+  {
+    "name": "Change TID and SID (grab ACE)",
+    "jap0": "rng/tidsid_JPNGrab.txt",
+    "jap1": "rng/tidsid_JPNGrab.txt",
+    "game": ["fr", "lg"],
+    "cat": ["rng"]
+  },
+  {
     "name": "Replace TID with SID",
     "eng1": "misc/CopySIDtoTID.txt",
     "eng0": "misc/CopySIDtoTID.txt",
@@ -42,6 +49,13 @@
     "ger": "misc/CopySIDtoTID.txt",
     "spa": "misc/CopySIDtoTID.txt",
     "ita": "misc/CopySIDtoTID.txt",
+    "game": ["fr", "lg"],
+    "cat": ["misc"]
+  },
+  {
+    "name": "Replace TID with SID (grab ACE)",
+    "jap0": "misc/CopySIDtoTID_JPNGrab.txt",
+    "jap1": "misc/CopySIDtoTID_JPNGrab.txt",
     "game": ["fr", "lg"],
     "cat": ["misc"]
   },
@@ -147,6 +161,13 @@
     "ger": "pkmn/ReadPokemonSID.txt",
     "spa": "pkmn/ReadPokemonSID.txt",
     "ita": "pkmn/ReadPokemonSID.txt",
+    "game": ["fr", "lg"],
+    "cat": ["pkmn"]
+  },
+  {
+    "name": "Read Pokemon SID (grab ACE)",
+    "jap0": "pkmn/ReadPokemonSID_JPNGrab.txt",
+    "jap1": "pkmn/ReadPokemonSID_JPNGrab.txt",
     "game": ["fr", "lg"],
     "cat": ["pkmn"]
   },

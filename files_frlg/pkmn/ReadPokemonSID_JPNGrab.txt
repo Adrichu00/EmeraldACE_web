@@ -1,0 +1,41 @@
+@@ title = "Read Pokemon SID (grab ACE)"
+@@ author = "Adrichu00 (based on Sleipnir's code)"
+@@ exit = null
+
+; This code will write the SID of the mon at Box 12 - Slot 1
+; into the player's TID
+
+@@
+
+// 0xB50E  PUSH {r1-r3, lr}
+// 0xA300  ADD  r3, pc, #0x00    // &Box1Name[4]
+0xA300B50E
+
+// 0x8B18  LDRH r0, [r3, #0x18]  // r0 = box_offset
+// 0x1A19  SUB  r1, r3, r0       // r1 = &Box12Slot1 + 0x06
+0x1A198B18
+
+// 0x00FF  Filler
+// 0x8B58  LDRH r0, [r3, #0x1A]  // r0 = tid_offset
+0x8B5800FF
+
+// 0x1A1A  SUB  r2, r3, r0       // r2 = &gSaveBlock2Ptr->playerTrainerId
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+0xE0001A1A
+
+// 0xFF00  Bad Filler
+// 0x8808  LDRH r0, [r1]         // Load Mon SID
+0x8808FF00
+
+// 0x8010  STRH r0, [r2]         // Write in TID
+// 0x2000  MOV  r0, #0x00        // r0 = FALSE
+0x20008010
+
+// 0xBD0E  POP  {r1-r3, pc}      // return
+// 0x00FF  Filler
+0x00FFBD0E
+
+// Data
+// 0x1C1E  box_offset
+// 0xD0A2  tid_offset
+0xD0A21C1E
