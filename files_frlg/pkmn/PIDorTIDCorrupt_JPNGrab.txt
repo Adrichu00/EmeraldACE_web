@@ -29,37 +29,37 @@ ctype_fix ?= f3 << 24 | f2 << 16 | f1 << 8 | f0
 
 @@
 
-// 0xB50E  PUSH {r1-r3, pc}
-// 0xA300  ADD  r3, pc, #0x00    // r3 = &Box1Name[4]
-0xA300B50E
+// 0xB506  PUSH {r1, r2, pc}
+// 0xA200  ADD  r2, pc, #0x00    // r2 = &Box1Name[4]
+0xA200B506
 
-// 0x8B98  LDRH r0, [r3, #0x1C]  // r0 = box_offset
-// 0x1A19  SUB  r1, r3, r0       // r1 = &Box3Slot1 (+4 if id > 0 (OTID))
-0x1A198B98
+// 0x8B90  LDRH r0, [r2, #0x1C]  // r0 = box_offset
+// 0x1A11  SUB  r1, r2, r0       // r1 = &Box3Slot1 (+4 if id > 0 (OTID))
+0x1A118B90
 
 // 0x00FF  Filler
-// 0x6A18  LDR  r0, [r3, #0x20]  // r0 = ctype_base
-0x6A1800FF
+// 0x6A10  LDR  r0, [r2, #0x20]  // r0 = ctype_base
+0x6A1000FF
 
-// 0x6A5A  LDR  r2, [r3, #0x24]  // r2 = ctype_fix
+// 0x6A52  LDR  r2, [r2, #0x24]  // r2 = ctype_fix
 // 0xE000  B    pc+0x04          // Skip Bad Filler
-0xE0006A5A
+0xE0006A52
 
 // 0xFF00  Bad Filler
 // 0x1812  ADD  r2, r2, r0       // r2 = ctype
 0x1812FF00
 
-// 0x6808  LDR  r0, [r1]         // Load PID/OTID
-// 0x4050  EOR  r0, r2           // Change PID/OTID
+// 0x6808  LDR  r0, [r1]         // r1 = PID/OTID
+// 0x4050  EOR  r0, r2           // r0 = New PID/OTID
 0x40506808
 
-// 0x6008  STR  r0, [r1]         // Write PID/OTID
+// 0x6008  STR  r0, [r1]         // Update PID/OTID
 // 0x00FF  Filler
 0x00FF6008
 
 // 0x2000  MOV  r0, #0x00        // r0 = FALSE
-// 0xBD0E  POP  {r1-r3, pc}      // return
-0xBD0E2000
+// 0xBD06  POP  {r1, r2, pc}     // return
+0xBD062000
 
 // Data
 {0xFF000000 | box_offset}

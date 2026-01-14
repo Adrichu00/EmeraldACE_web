@@ -1,4 +1,4 @@
-@@ title = "Create Pokemon from Nothing (grab ACE)"
+@@ title = "Create Species from Nothing"
 @@ author = "Adrichu00"
 @@ exit = null
 
@@ -23,29 +23,29 @@ species_fix ?= sfh << 8 | sfl
 
 @@
 
-// 0xB51E  PUSH {r1-r4, lr}
-// 0xA400  ADD  r4, pc, #0x00    // r4 = &Box1Name[4]
-0xA400B51E
+// 0xB506  PUSH {r1, r2, lr}
+// 0xA200  ADD  r2, pc, #0x00    // r2 = &Box1Name[4]
+0xA200B506
 
-// 0x8C20  LDRH r0, [r4, #0x20]  // r0 = box_offset
-// 0x1A21  SUB  r1, r4, r0       // r1 = &Box12Slot1
-0x1A218C20
+// 0x8C10  LDRH r0, [r2, #0x20]  // r0 = box_offset
+// 0x1A11  SUB  r1, r2, r0       // r1 = &Box12Slot1
+0x1A118C10
 
 // 0x00FF  Filler
 // 0x2002  MOV  r0, #0x02        // r0 = Misc. Flags
 0x200200FF
 
-// 0x8CA2  LDRH r2, [r4, #0x24]  // r2 = species_fix
+// 0x74C8  STRB r0, [r1, #0x13]  // Write Misc. Flags
 // 0xE000  B    pc+0x04          // Skip Bad Filler
-0xE0008CA2
+0xE00074C8
 
 // 0xFF00  Bad Filler
-// 0x74C8  STRB r0, [r1, #0x13]  // Write Misc. Flags
-0x74C8FF00
+// 0x8C50  LDRH r0, [r2, #0x22]  // r0 = species_base
+0x8C50FF00
 
-// 0x8C60  LDRH r0, [r4, #0x22]  // r0 = species_base
+// 0x8C92  LDRH r2, [r2, #0x24]  // r2 = species_fix
 // 0x1880  ADD  r0, r0, r2       // r0 = species
-0x18808C60
+0x18808C92
 
 // 0x8388  STRH r0, [r1, #0x1C]  // Write Checksum
 // 0x00FF  Filler
@@ -55,9 +55,9 @@ species_fix ?= sfh << 8 | sfl
 // 0x2000  MOV  r0, #0x00        // r0 = FALSE
 0x20008408
 
-// 0xBD1E  POP {r1-r4, lr}       // return
+// 0xBD06  POP {r1, r2, lr}      // return
 // 0xFF00  Bad Filler
-0xFF00BD1E
+0xFF00BD06
 
 // Data
 {species_base << 16 | box_offset}

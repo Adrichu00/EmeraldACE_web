@@ -20,26 +20,27 @@ slf = sl > 0xEE? sl - 0xEE: (0xB6 < sl && sl < 0xBA? sl - 0xB6: 0)
 shf = sh > 0xEE? sh - 0xEE: (0xB6 < sh && sh < 0xBA? sh - 0xB6: 0)
 otid_base = shb << 24 | slb << 16 | thb << 8 | tlb
 otid_fix = shf << 24 | slf << 16 | thf << 8 | tlf
+; Fix OTID = 0
 otid_base ?= TID == 0 && SID == 0? 0xEEEEEEEE: otid_base
 otid_fix ?= TID == 0 && SID == 0? 0x11111112: otid_fix
 
 @@
 
-// 0xB50E  PUSH {r1-r3, lr}
-// 0xA300  ADD  r3, pc, #0x00    // r3 = &Box1Name[4]
-0xA300B50E
+// 0xB506  PUSH {r1, r2, lr}
+// 0xA200  ADD  r2, pc, #0x00    // r2 = &Box1Name[4]
+0xA200B506
 
-// 0x8B98  LDRH r0, [r3, #0x1C]  // r0 = box_offset
-// 0x1A19  SUB  r1, r3, r0       // r1 = &gSaveBlock2Ptr->playerTrainerId
-0x1A198B98
+// 0x8B90  LDRH r0, [r2, #0x1C]  // r0 = tid_offset
+// 0x1A11  SUB  r1, r2, r0       // r1 = &gSaveBlock2Ptr->playerTrainerId
+0x1A118B90
 
 // 0x00FF  Filler
-// 0x6A18  LDR  r0, [r3, #0x20]  // r0 = otid_base
-0x6A1800FF
+// 0x6A10  LDR  r0, [r2, #0x20]  // r0 = otid_base
+0x6A1000FF
 
-// 0x6A5A  LDR  r2, [r3, #0x24]  // r2 = otid_fix
+// 0x6A52  LDR  r2, [r2, #0x24]  // r2 = otid_fix
 // 0xE000  B    pc+0x04          // Skip Bad Filler
-0xE0006A5A
+0xE0006A52
 
 // 0xFF00  Bad Filler
 // 0x1880  ADD  r0, r0, r2       // r0 = otid
@@ -54,12 +55,10 @@ otid_fix ?= TID == 0 && SID == 0? 0x11111112: otid_fix
 0x00FF8048
 
 // 0x2000  MOV  r0, #0x00        // r0 = FALSE
-// 0xBD0E  POP  {r1-r3, pc}      // return
-0xBD0E2000
+// 0xBD06  POP  {r1, r2, pc}     // return
+0xBD062000
 
 // Data
-// 0xD0A2  box_offset
-// 0xFF00  Bad Filler
-0xFF00D0A2
+0xFF00D0A2   // tid_offset
 {otid_base}
 {otid_fix}

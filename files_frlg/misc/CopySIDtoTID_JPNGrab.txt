@@ -1,4 +1,4 @@
-@@ title = "Replace TID with SID (grab ACE)"
+@@ title = "Copy TID to SID (grab ACE)"
 @@ author = "Adrichu00"
 @@ exit = null
 
