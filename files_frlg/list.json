@@ -468,6 +468,13 @@
     "cat": ["misc"]
   },
   {
+    "name": "Change Flags (grab ACE)",
+    "jap0": "misc/ChangeFlag_JPNGrab.txt",
+    "jap1": "misc/ChangeFlag_JPNGrab.txt",
+    "game": ["fr", "lg"],
+    "cat": ["misc"]
+  },
+  {
     "name": "Change Variable",
     "eng1": "misc/ChangeVar.txt",
     "eng0": "misc/ChangeVar.txt",
@@ -475,6 +482,13 @@
     "ger": "misc/ChangeVar.txt",
     "spa": "misc/ChangeVar.txt",
     "ita": "misc/ChangeVar.txt",
+    "game": ["fr", "lg"],
+    "cat": ["misc"]
+  },
+  {
+    "name": "Change Variable (grab ACE)",
+    "jap0": "misc/ChangeVar_JPNGrab.txt",
+    "jap1": "misc/ChangeVar_JPNGrab.txt",
     "game": ["fr", "lg"],
     "cat": ["misc"]
   },

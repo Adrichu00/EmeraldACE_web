@@ -1,0 +1,78 @@
+@@ title = "Change Flags (grab ACE)"
+@@ author = "Adrichu00"
+@@ exit = null
+
+; Full list of flags at:
+; https://github.com/pret/pokefirered/blob/master/include/constants/flags.h
+
+flag = 0x000  ; From 0x000 to 0x8FF
+value = 0     ; 1 to set, 0 to clear
+
+; Multiple Flags
+;   This word (4 bytes) will be bitwise ORed with the flag_mask, making the code
+;   to also change those flags. Keep in mind that this value has to be word-aligned
+;   in memory. Only flags within the same word as the target flag can be modified.
+;   That is, if flag & 0xFE0 == extra_flag & 0xFE0, extra_flag can be added
+;   by setting bit extra_flag & 0x1F of multi_flag.
+;   Your flag above doesn't need to be added (bit flag & 0x1F).
+;   Setting this parameter to 0 just changes the target flag
+
+multi_flag = 0x00000000
+
+; Do not change these parameters
+flag_word_offset = 0xB228 - (flag >> 3 & 0x01FC)
+flag_mask = multi_flag | 1 << (flag & 0x1F)
+ol = flag_word_offset & 0xFF
+oh = flag_word_offset >> 8 & 0xFF
+obl = ol > 0xEE? 0xEE: (0xB6 < ol && ol < 0xBA? 0xB6: ol)
+flag_word_offset_base ?= oh << 8 | obl
+flag_word_offset_fix ?= ol > 0xEE? ol - 0xEE: (0xB6 < ol && ol < 0xBA? ol - 0xB6: 0)
+flag_mask_base ?= flag_mask & 0x7F7F7F7F
+flag_mask_fix ?= flag_mask & 0x80808080
+
+@@
+
+// 0xB506  PUSH {r1, r2, lr}
+// 0xA200  ADD  r2, pc, #0x00    // r2 = &Box1Name[4]
+0xA200B506
+
+// 0x8D50  LDRH r0, [r2, #0x2A]  // r0 = flag_word_offset_base
+// 0x7F91  LDRB r1, [r2, #0x1E]  // r1 = flag_word_offset_fix
+0x7F918D50
+
+// 0x00FF  Filler
+// 0x1840  ADD  r0, r0, r1       // r0 = flag_word_offset
+0x184000FF
+
+// 0x1A11  SUB  r1, r2, r0       // r1 = &gSaveBlockPtr->flags[flag >> 3 & 0x01FC]
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+0xE0001A11
+
+// 0xFF00  Bad Filler
+// 0x6A50  LDR  r0, [r2, #0x24]  // r0 = flag_mask_base
+0x6A50FF00
+
+// 0x6AD2  LDR  r2, [r2, #0x2C]  // r2 = flag_mask_fix
+// 0x4302  ORR  r2, r0           // r2 = flag_mask
+0x43026AD2
+
+// 0x6808  LDR  r0, [r1]         // Load Flags Word
+// 0x00FF  Filler
+0x00FF6808
+
+// 0x43X0  BIC/ORR r0, r2        // Clear/Set Flags
+// 0x6008  STR  r0, [r1]         // Write Flags Word
+{(value? 0x10: 0x90) | 0x60084300}
+
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+// 0xFFXX  Bad Filler (with flag_word_offset_fix)
+{flag_word_offset_fix << 16 | 0xFF00E000}
+
+// 0x2000  MOV  r0, #0x00        // r0 = FALSE
+// 0xBD06  POP  {r1, r2, pc}     // return
+0xBD062000
+
+// Data
+{flag_mask_base}
+{flag_word_offset_base << 16 | 0x000000FF}
+{flag_mask_fix}

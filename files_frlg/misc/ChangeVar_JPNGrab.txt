@@ -1,0 +1,63 @@
+@@ title = "Change Var (grab ACE)"
+@@ author = "Adrichu00"
+@@ exit = null
+
+; Full list of variables at:
+; https://github.com/pret/pokefirered/blob/master/include/constants/vars.h
+
+var = 0x00      ; Only 0x40XX vars (you can just use 0xXX)
+value = 0x0000  ; 2 Byte values
+
+; Do not change these parameters
+var_offset = 0xB108 - (var << 1 & 0x01FE)
+ol = var_offset & 0xFF
+oh = var_offset >> 8 & 0xFF
+obl = ol > 0xEE? 0xEE: (0xB6 < ol && ol < 0xBA? 0xB6: ol)
+var_offset_base ?= oh << 8 | obl
+var_offset_fix ?= ol > 0xEE? ol - 0xEE: (0xB6 < ol && ol < 0xBA? ol - 0xB6: 0)
+vl = value & 0xFF
+vh = value >> 8 & 0xFF
+vbl = vl > 0xEE? 0xEE: (0xB6 < vl && vl < 0xBA? 0xB6: vl)
+vbh = vh > 0xEE? 0xEE: (0xB6 < vh && vh < 0xBA? 0xB6: vh)
+vfl = vl > 0xEE? vl - 0xEE: (0xB6 < vl && vl < 0xBA? vl - 0xB6: 0)
+vfh = vh > 0xEE? vh - 0xEE: (0xB6 < vh && vh < 0xBA? vh - 0xB6: 0)
+value_base ?= vbh << 8 | vbl
+value_fix ?= vfh << 8 | vfl
+
+@@
+
+// 0xB506  PUSH {r1, r2, lr}
+// 0xA200  ADD  r2, pc, #0x00    // r2 = &Box1Name[4]
+0xA200B506
+
+// 0x8B90  LDRH r0, [r2, #0x1C]  // r0 = var_offset_base
+// 0x7F91  LDRB r1, [r2, #0x1E]  // r1 = var_offset_fix
+0x7F918B90
+
+// 0x00FF  Filler
+// 0x1840  ADD  r0, r0, r1       // r0 = var_offset
+0x184000FF
+
+// 0x1A11  SUB  r1, r2, r0       // r1 = &gSaveBlock1->vars[var & 0xFF]
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+0xE0001A11
+
+// 0xFF00  Bad Filler
+// 0x8C10  LDRH r0, [r2, #0x20]  // r0 = value_base
+0x8C10FF00
+
+// 0x8C52  LDRH r2, [r2, #0x22]  // r2 = value_fix
+// 0x1880  ADD  r0, r0, r2       // r0 = value
+0x18808C52
+
+// 0x8008  STRH r0, [r1]         // gSaveBlock1->vars[var & 0xFF] = value
+// 0x00FF  Filler
+0x00FF8008
+
+// 0x2000  MOV  r0, #0x00         // r0 = FALSE
+// 0xBD06  POP  {r1, r2, pc}      // return
+0xBD062000
+
+// Data
+{0xFF000000 | var_offset_fix << 16 | var_offset_base}
+{value_fix << 16 | value_base}
