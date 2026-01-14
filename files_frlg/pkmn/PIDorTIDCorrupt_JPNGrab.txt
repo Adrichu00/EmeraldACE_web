@@ -1,0 +1,67 @@
+@@ title = "Perform PID or OTID Corruption (grab ACE)"
+@@ author = "Adrichu00 (based on PapaJefe's code)"
+@@ exit = null
+
+
+; Performs a PID/OTID corruption of the mon in Box 3 - Slot 1
+; applying a XOR with ctype
+
+ctype = 0x40000000
+id = 0  // 0 for PID 1 for OTID
+
+
+; Do not change these parameters
+box_offset = id? 0x7080: 0x7084
+ct0 = ctype & 0xFF
+ct1 = ctype >> 8 & 0xFF
+ct2 = ctype >> 16 & 0xFF
+ct3 = ctype >> 24 & 0xFF
+b0 = ct0 > 0xEE? 0xEE: (0xB6 < ct0 && ct0 < 0xBA? 0xB6: ct0)
+b1 = ct1 > 0xEE? 0xEE: (0xB6 < ct1 && ct1 < 0xBA? 0xB6: ct1)
+b2 = ct2 > 0xEE? 0xEE: (0xB6 < ct2 && ct2 < 0xBA? 0xB6: ct2)
+b3 = ct3 > 0xEE? 0xEE: (0xB6 < ct3 && ct3 < 0xBA? 0xB6: ct3)
+f0 = ct0 > 0xEE? ct0 - 0xEE: (0xB6 < ct0 && ct0 < 0xBA? ct0 - 0xB6: 0)
+f1 = ct1 > 0xEE? ct1 - 0xEE: (0xB6 < ct1 && ct1 < 0xBA? ct1 - 0xB6: 0)
+f2 = ct2 > 0xEE? ct2 - 0xEE: (0xB6 < ct2 && ct2 < 0xBA? ct2 - 0xB6: 0)
+f3 = ct3 > 0xEE? ct3 - 0xEE: (0xB6 < ct3 && ct3 < 0xBA? ct3 - 0xB6: 0)
+ctype_base ?= b3 << 24 | b2 << 16 | b1 << 8 | b0
+ctype_fix ?= f3 << 24 | f2 << 16 | f1 << 8 | f0
+
+@@
+
+// 0xB50E  PUSH {r1-r3, pc}
+// 0xA300  ADD  r3, pc, #0x00    // r3 = &Box1Name[4]
+0xA300B50E
+
+// 0x8B98  LDRH r0, [r3, #0x1C]  // r0 = box_offset
+// 0x1A19  SUB  r1, r3, r0       // r1 = &Box3Slot1 (+4 if id > 0 (OTID))
+0x1A198B98
+
+// 0x00FF  Filler
+// 0x6A18  LDR  r0, [r3, #0x20]  // r0 = ctype_base
+0x6A1800FF
+
+// 0x6A5A  LDR  r2, [r3, #0x24]  // r2 = ctype_fix
+// 0xE000  B    pc+0x04          // Skip Bad Filler
+0xE0006A5A
+
+// 0xFF00  Bad Filler
+// 0x1812  ADD  r2, r2, r0       // r2 = ctype
+0x1812FF00
+
+// 0x6808  LDR  r0, [r1]         // Load PID/OTID
+// 0x4050  EOR  r0, r2           // Change PID/OTID
+0x40506808
+
+// 0x6008  STR  r0, [r1]         // Write PID/OTID
+// 0x00FF  Filler
+0x00FF6008
+
+// 0x2000  MOV  r0, #0x00        // r0 = FALSE
+// 0xBD0E  POP  {r1-r3, pc}      // return
+0xBD0E2000
+
+// Data
+{0xFF000000 | box_offset}
+{ctype_base}
+{ctype_fix}

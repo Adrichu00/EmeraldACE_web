@@ -223,6 +223,13 @@
     "cat": ["pkmn"]
   },
   {
+    "name": "Perform PID or TID corruption (grab ACE)",
+    "jap0": "pkmn/PIDorTIDCorrupt_JPNGrab.txt",
+    "jap1": "pkmn/PIDorTIDCorrupt_JPNGrab.txt",
+    "game": ["fr", "lg"],
+    "cat": ["pkmn"]
+  },
+  {
     "name": "Create Pokemon species from nothing",
     "eng1": "pkmn/PokemonFromNothing.txt",
     "eng0": "pkmn/PokemonFromNothing.txt",
