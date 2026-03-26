@@ -61,17 +61,23 @@ aligned_pc = 0 ; Set to 1 for old emulators
 ; Do not modify anything below
 
 offset = (pocket? (delete_mode? 0xBD06: 0xBCD6): (delete_mode? 0xBD7E: 0xBD0A)) - (!!aligned_pc * 2)
+item_id = item_id & (delete_mode? 0x0000: 0xFFFF)
 
 @@
 
 ; Load Address (Target Slot in Pocket)
 SUB r11, pc, {offset} ?
-; Write Item ID
-MOV r12, {item_id & (delete_mode? 0x0000: 0xFFFF)} ?
-STRH r12, [r11], 0x02
-; Load quantity from last slot (Should be 0 (empty). Must be 0 for delete_mode = 1)
-LDRH r12, [r11, {delete_mode? (pocket? 0x30: 0x74): 0x00}]
-; Write quantity or Increase it
-{delete_mode? 0xE1CBC0B0: 0xE2ACC2B0} ; STRH r12, [r11] or ADC r12, r12, 0x0B
-; Nothing or Write
-{delete_mode? 0x000000FF: 0xE1CBC0B0} ; Filler or STRH r12, [r11]
+
+; Item ID
+MOV r12, {item_id} ?
+STRH r12, [r11], 0x02  ; Write Item ID
+
+; Quantity
+.if delete_mode == 0
+LDRH r12, [r11]        ; Load current quantity (should be 0 (empty))
+ADC  r12, r12, #0x0B   ; Increase quantity
+.else
+; Load quantity from last slot (must be 0 (empty))
+LDRH r12, [r11, {pocket? 0x30: 0x74}]
+.endif
+STRH r12, [r11]        ; Write quantity
